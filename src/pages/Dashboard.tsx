@@ -1,6 +1,16 @@
 
 import React from 'react';
 import MainLayout from '../components/Layout/MainLayout';
+import {
+  CurrencyDollarIcon,
+  ChartBarIcon,
+  ShoppingCartIcon,
+  CubeIcon,
+  PlayIcon,
+  PlusIcon,
+  DocumentChartBarIcon,
+  CogIcon
+} from '@heroicons/react/24/outline';
 
 const Dashboard: React.FC = () => {
   const stats = [
@@ -8,28 +18,28 @@ const Dashboard: React.FC = () => {
       title: "Today's Sales",
       value: '$1,247.80',
       change: '+12.5%',
-      icon: '💰',
+      icon: CurrencyDollarIcon,
       color: 'text-green-400'
     },
     {
       title: 'Total Revenue',
       value: '$48,392.15',
       change: '+8.2%',
-      icon: '📈',
+      icon: ChartBarIcon,
       color: 'text-gemini-neon'
     },
     {
       title: 'Transactions',
       value: '127',
       change: '+15.3%',
-      icon: '🛒',
+      icon: ShoppingCartIcon,
       color: 'text-gemini-purple'
     },
     {
       title: 'Products Sold',
       value: '342',
       change: '+9.7%',
-      icon: '📦',
+      icon: CubeIcon,
       color: 'text-yellow-400'
     }
   ];
@@ -39,6 +49,13 @@ const Dashboard: React.FC = () => {
     { id: '#002', customer: 'Jane Smith', amount: '$78.50', time: '5 minutes ago' },
     { id: '#003', customer: 'Mike Johnson', amount: '$123.25', time: '8 minutes ago' },
     { id: '#004', customer: 'Sarah Wilson', amount: '$34.75', time: '12 minutes ago' },
+  ];
+
+  const quickActions = [
+    { icon: ShoppingCartIcon, title: 'Start Sale', description: 'Open POS', color: 'bg-gemini-indigo/20 hover:bg-gemini-indigo/30' },
+    { icon: PlusIcon, title: 'Add Product', description: 'Manage inventory', color: 'bg-gemini-purple/20 hover:bg-gemini-purple/30' },
+    { icon: DocumentChartBarIcon, title: 'View Reports', description: 'Sales analytics', color: 'bg-gemini-neon/20 hover:bg-gemini-neon/30' },
+    { icon: CogIcon, title: 'Settings', description: 'Configure store', color: 'bg-yellow-500/20 hover:bg-yellow-500/30' }
   ];
 
   return (
@@ -51,23 +68,26 @@ const Dashboard: React.FC = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className="glass-card p-6 hover:shadow-neon-sm transition-all duration-300 transform hover:scale-105"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gemini-text-muted text-sm font-medium">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gemini-text-primary mt-1">{stat.value}</p>
-                  <p className={`text-sm mt-1 ${stat.color}`}>
-                    {stat.change} from yesterday
-                  </p>
+          {stats.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div
+                key={index}
+                className="glass-card p-6 hover:bg-gemini-card/80 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gemini-text-muted text-sm font-medium">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gemini-text-primary mt-1">{stat.value}</p>
+                    <p className={`text-sm mt-1 ${stat.color}`}>
+                      {stat.change} from yesterday
+                    </p>
+                  </div>
+                  <IconComponent className="w-8 h-8 text-gemini-text-muted" />
                 </div>
-                <div className="text-3xl">{stat.icon}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -101,29 +121,16 @@ const Dashboard: React.FC = () => {
           <div className="glass-card p-6">
             <h2 className="text-xl font-semibold text-gemini-text-primary mb-4">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4">
-              <button className="p-4 bg-gemini-indigo/20 hover:bg-gemini-indigo/30 rounded-lg transition-colors duration-200 group">
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">🛒</div>
-                <p className="font-medium text-gemini-text-primary">Start Sale</p>
-                <p className="text-xs text-gemini-text-muted">Open POS</p>
-              </button>
-              
-              <button className="p-4 bg-gemini-purple/20 hover:bg-gemini-purple/30 rounded-lg transition-colors duration-200 group">
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">📦</div>
-                <p className="font-medium text-gemini-text-primary">Add Product</p>
-                <p className="text-xs text-gemini-text-muted">Manage inventory</p>
-              </button>
-              
-              <button className="p-4 bg-gemini-neon/20 hover:bg-gemini-neon/30 rounded-lg transition-colors duration-200 group">
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">📊</div>
-                <p className="font-medium text-gemini-text-primary">View Reports</p>
-                <p className="text-xs text-gemini-text-muted">Sales analytics</p>
-              </button>
-              
-              <button className="p-4 bg-yellow-500/20 hover:bg-yellow-500/30 rounded-lg transition-colors duration-200 group">
-                <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">🎯</div>
-                <p className="font-medium text-gemini-text-primary">Settings</p>
-                <p className="text-xs text-gemini-text-muted">Configure store</p>
-              </button>
+              {quickActions.map((action, index) => {
+                const IconComponent = action.icon;
+                return (
+                  <button key={index} className={`p-4 ${action.color} rounded-lg transition-colors duration-200`}>
+                    <IconComponent className="w-8 h-8 text-gemini-text-primary mb-2" />
+                    <p className="font-medium text-gemini-text-primary">{action.title}</p>
+                    <p className="text-xs text-gemini-text-muted">{action.description}</p>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

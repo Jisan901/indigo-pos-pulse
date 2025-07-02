@@ -1,6 +1,14 @@
-
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
+import { 
+  MagnifyingGlassIcon,
+  DocumentArrowDownIcon,
+  ShoppingCartIcon,
+  CurrencyDollarIcon,
+  ChartBarIcon,
+  EyeIcon,
+  XMarkIcon
+} from '@heroicons/react/24/outline';
 
 interface Sale {
   id: string;
@@ -77,6 +85,24 @@ const Sales: React.FC = () => {
     return filteredSales.reduce((sum, sale) => sum + sale.total, 0);
   };
 
+  const statCards = [
+    {
+      title: "Total Sales",
+      value: filteredSales.length.toString(),
+      icon: ShoppingCartIcon
+    },
+    {
+      title: "Total Revenue",
+      value: `$${getTotalRevenue().toFixed(2)}`,
+      icon: CurrencyDollarIcon
+    },
+    {
+      title: "Average Sale",
+      value: `$${filteredSales.length > 0 ? (getTotalRevenue() / filteredSales.length).toFixed(2) : '0.00'}`,
+      icon: ChartBarIcon
+    }
+  ];
+
   return (
     <MainLayout>
       <div className="animate-fade-in">
@@ -87,45 +113,29 @@ const Sales: React.FC = () => {
           </div>
           <button
             onClick={handleExport}
-            className="neon-button"
+            className="neon-button flex items-center gap-2"
           >
-            📊 Export Data
+            <DocumentArrowDownIcon className="w-5 h-5" />
+            Export Data
           </button>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="glass-card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gemini-text-muted text-sm font-medium">Total Sales</p>
-                <p className="text-2xl font-bold text-gemini-text-primary">{filteredSales.length}</p>
+          {statCards.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div key={index} className="glass-card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gemini-text-muted text-sm font-medium">{stat.title}</p>
+                    <p className="text-2xl font-bold text-gemini-text-primary">{stat.value}</p>
+                  </div>
+                  <IconComponent className="w-8 h-8 text-gemini-text-muted" />
+                </div>
               </div>
-              <div className="text-3xl">🛒</div>
-            </div>
-          </div>
-          
-          <div className="glass-card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gemini-text-muted text-sm font-medium">Total Revenue</p>
-                <p className="text-2xl font-bold text-gemini-neon">${getTotalRevenue().toFixed(2)}</p>
-              </div>
-              <div className="text-3xl">💰</div>
-            </div>
-          </div>
-          
-          <div className="glass-card p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-gemini-text-muted text-sm font-medium">Average Sale</p>
-                <p className="text-2xl font-bold text-gemini-purple">
-                  ${filteredSales.length > 0 ? (getTotalRevenue() / filteredSales.length).toFixed(2) : '0.00'}
-                </p>
-              </div>
-              <div className="text-3xl">📈</div>
-            </div>
-          </div>
+            );
+          })}
         </div>
 
         {/* Search and Filters */}
@@ -139,9 +149,7 @@ const Sales: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-3 pl-12 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
               />
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gemini-text-muted">
-                🔍
-              </div>
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
             </div>
             
             <div>
@@ -196,8 +204,9 @@ const Sales: React.FC = () => {
                     <td className="p-4">
                       <button
                         onClick={() => setSelectedSale(sale)}
-                        className="px-3 py-1 bg-gemini-indigo/20 text-gemini-indigo-light rounded hover:bg-gemini-indigo/30 transition-colors duration-200"
+                        className="px-3 py-1 bg-gemini-indigo/20 text-gemini-indigo-light rounded hover:bg-gemini-indigo/30 transition-colors duration-200 flex items-center gap-1"
                       >
+                        <EyeIcon className="w-4 h-4" />
                         View Details
                       </button>
                     </td>
@@ -216,9 +225,9 @@ const Sales: React.FC = () => {
                 <h2 className="text-2xl font-bold text-gemini-text-primary">Sale Details</h2>
                 <button
                   onClick={() => setSelectedSale(null)}
-                  className="text-gemini-text-muted hover:text-gemini-text-primary text-2xl"
+                  className="text-gemini-text-muted hover:text-gemini-text-primary"
                 >
-                  ×
+                  <XMarkIcon className="w-6 h-6" />
                 </button>
               </div>
               

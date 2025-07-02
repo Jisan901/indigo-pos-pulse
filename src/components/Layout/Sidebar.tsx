@@ -2,6 +2,13 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { 
+  ChartBarIcon, 
+  ShoppingCartIcon, 
+  CubeIcon, 
+  CurrencyDollarIcon,
+  ArrowLeftOnRectangleIcon
+} from '@heroicons/react/24/outline';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
@@ -9,10 +16,10 @@ const Sidebar: React.FC = () => {
   const { logout, user } = useAuth();
 
   const menuItems = [
-    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/pos', label: 'POS', icon: '🛒' },
-    { path: '/products', label: 'Products', icon: '📦' },
-    { path: '/sales', label: 'Sales', icon: '💰' },
+    { path: '/dashboard', label: 'Dashboard', icon: ChartBarIcon },
+    { path: '/pos', label: 'POS', icon: ShoppingCartIcon },
+    { path: '/products', label: 'Products', icon: CubeIcon },
+    { path: '/sales', label: 'Sales', icon: CurrencyDollarIcon },
   ];
 
   const handleLogout = () => {
@@ -46,19 +53,22 @@ const Sidebar: React.FC = () => {
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <button
-                onClick={() => navigate(item.path)}
-                className={`sidebar-item w-full ${
-                  location.pathname === item.path ? 'active' : ''
-                }`}
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span className="font-medium">{item.label}</span>
-              </button>
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <li key={item.path}>
+                <button
+                  onClick={() => navigate(item.path)}
+                  className={`sidebar-item w-full ${
+                    location.pathname === item.path ? 'active' : ''
+                  }`}
+                >
+                  <IconComponent className="w-5 h-5" />
+                  <span className="font-medium">{item.label}</span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -68,7 +78,7 @@ const Sidebar: React.FC = () => {
           onClick={handleLogout}
           className="sidebar-item w-full text-red-400 hover:bg-red-500/20 hover:text-red-300"
         >
-          <span className="text-xl">🚪</span>
+          <ArrowLeftOnRectangleIcon className="w-5 h-5" />
           <span className="font-medium">Logout</span>
         </button>
       </div>

@@ -2,6 +2,13 @@
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { toast } from 'sonner';
+import { 
+  MagnifyingGlassIcon,
+  PlusIcon,
+  PencilIcon,
+  TrashIcon,
+  CubeIcon
+} from '@heroicons/react/24/outline';
 
 interface Product {
   id: string;
@@ -110,9 +117,10 @@ const Products: React.FC = () => {
           </div>
           <button
             onClick={handleAddProduct}
-            className="neon-button"
+            className="neon-button flex items-center gap-2"
           >
-            + Add Product
+            <PlusIcon className="w-5 h-5" />
+            Add Product
           </button>
         </div>
 
@@ -126,9 +134,7 @@ const Products: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-3 pl-12 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
             />
-            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gemini-text-muted">
-              🔍
-            </div>
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
           </div>
         </div>
 
@@ -152,7 +158,7 @@ const Products: React.FC = () => {
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-12 h-12 bg-gemini-bg rounded-lg flex items-center justify-center">
-                          <span className="text-xl">📦</span>
+                          <CubeIcon className="w-6 h-6 text-gemini-text-muted" />
                         </div>
                         <div>
                           <p className="font-medium text-gemini-text-primary">{product.name}</p>
@@ -181,14 +187,16 @@ const Products: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditProduct(product)}
-                          className="px-3 py-1 bg-gemini-indigo/20 text-gemini-indigo-light rounded hover:bg-gemini-indigo/30 transition-colors duration-200"
+                          className="px-3 py-1 bg-gemini-indigo/20 text-gemini-indigo-light rounded hover:bg-gemini-indigo/30 transition-colors duration-200 flex items-center gap-1"
                         >
+                          <PencilIcon className="w-4 h-4" />
                           Edit
                         </button>
                         <button
                           onClick={() => handleDeleteProduct(product.id)}
-                          className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors duration-200"
+                          className="px-3 py-1 bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors duration-200 flex items-center gap-1"
                         >
+                          <TrashIcon className="w-4 h-4" />
                           Delete
                         </button>
                       </div>

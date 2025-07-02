@@ -1,8 +1,16 @@
-
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { useCart } from '../context/CartContext';
 import { toast } from 'sonner';
+import { 
+  MagnifyingGlassIcon,
+  ShoppingCartIcon,
+  PlusIcon,
+  MinusIcon,
+  XMarkIcon,
+  CurrencyDollarIcon,
+  CreditCardIcon
+} from '@heroicons/react/24/outline';
 
 interface Product {
   id: string;
@@ -78,9 +86,7 @@ const POS: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-4 py-3 pl-12 bg-gemini-surface border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
               />
-              <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gemini-text-muted">
-                🔍
-              </div>
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
             </div>
           </div>
 
@@ -90,14 +96,14 @@ const POS: React.FC = () => {
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="glass-card p-4 cursor-pointer hover:shadow-neon-sm transition-all duration-300 transform hover:scale-105"
+                  className="glass-card p-4 cursor-pointer hover:bg-gemini-card/80 transition-all duration-300"
                   onClick={() => handleAddToCart(product)}
                 >
                   <div className="aspect-square bg-gemini-bg rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-4xl">📦</span>
+                      <CubeIcon className="w-12 h-12 text-gemini-text-muted" />
                     )}
                   </div>
                   <h3 className="font-semibold text-gemini-text-primary text-sm mb-1">{product.name}</h3>
@@ -112,13 +118,16 @@ const POS: React.FC = () => {
         {/* Cart Section */}
         <div className="w-96 flex flex-col">
           <div className="glass-card p-6 flex-1 flex flex-col">
-            <h2 className="text-xl font-semibold text-gemini-text-primary mb-4">Current Sale</h2>
+            <h2 className="text-xl font-semibold text-gemini-text-primary mb-4 flex items-center gap-2">
+              <ShoppingCartIcon className="w-6 h-6" />
+              Current Sale
+            </h2>
             
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto mb-4">
               {state.items.length === 0 ? (
                 <div className="text-center text-gemini-text-muted py-8">
-                  <div className="text-4xl mb-2">🛒</div>
+                  <ShoppingCartIcon className="w-16 h-16 mx-auto mb-2 text-gemini-text-muted" />
                   <p>Cart is empty</p>
                 </div>
               ) : (
@@ -129,7 +138,7 @@ const POS: React.FC = () => {
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
                         ) : (
-                          <span className="text-sm">📦</span>
+                          <CubeIcon className="w-6 h-6 text-gemini-text-muted" />
                         )}
                       </div>
                       <div className="flex-1">
@@ -140,22 +149,22 @@ const POS: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light"
+                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light flex items-center justify-center"
                         >
-                          -
+                          <MinusIcon className="w-3 h-3" />
                         </button>
                         <span className="text-gemini-text-primary font-medium w-8 text-center">{item.quantity}</span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light"
+                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light flex items-center justify-center"
                         >
-                          +
+                          <PlusIcon className="w-3 h-3" />
                         </button>
                         <button
                           onClick={() => removeItem(item.id)}
-                          className="w-6 h-6 bg-red-500 rounded text-white text-xs hover:bg-red-600 ml-2"
+                          className="w-6 h-6 bg-red-500 rounded text-white text-xs hover:bg-red-600 ml-2 flex items-center justify-center"
                         >
-                          ×
+                          <XMarkIcon className="w-3 h-3" />
                         </button>
                       </div>
                     </div>
@@ -219,24 +228,24 @@ const POS: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setPaymentMethod('cash')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
                     paymentMethod === 'cash'
                       ? 'border-gemini-neon bg-gemini-neon/20 text-gemini-neon'
                       : 'border-gemini-indigo/30 text-gemini-text-secondary hover:border-gemini-indigo'
                   }`}
                 >
-                  <div className="text-2xl mb-1">💵</div>
+                  <CurrencyDollarIcon className="w-8 h-8" />
                   <div className="font-medium">Cash</div>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  className={`p-4 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
                     paymentMethod === 'card'
                       ? 'border-gemini-neon bg-gemini-neon/20 text-gemini-neon'
                       : 'border-gemini-indigo/30 text-gemini-text-secondary hover:border-gemini-indigo'
                   }`}
                 >
-                  <div className="text-2xl mb-1">💳</div>
+                  <CreditCardIcon className="w-8 h-8" />
                   <div className="font-medium">Card</div>
                 </button>
               </div>

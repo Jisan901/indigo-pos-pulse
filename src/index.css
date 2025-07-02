@@ -60,7 +60,7 @@
 @layer components {
   .neon-button {
     @apply bg-gradient-to-r from-gemini-indigo to-gemini-neon text-white font-semibold py-3 px-6 rounded-lg;
-    @apply hover:shadow-neon transition-all duration-300 transform hover:scale-105;
+    @apply hover:from-gemini-indigo-light hover:to-gemini-neon-glow transition-all duration-300;
     @apply focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:ring-opacity-50;
   }
   
