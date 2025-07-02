@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { useCart } from '../context/CartContext';
@@ -73,44 +74,46 @@ const POS: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="flex h-full gap-6 animate-fade-in">
+      <div className="flex h-full gap-8 p-6">
         {/* Products Section */}
-        <div className="flex-1 flex flex-col">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gemini-text-primary mb-4">Point of Sale</h1>
+        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-100 bg-white">
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Point of Sale</h1>
             
             {/* Search Bar */}
             <div className="relative">
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search products by name or SKU..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 pl-12 bg-gemini-surface border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               />
-              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
             </div>
           </div>
 
           {/* Products Grid */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
               {filteredProducts.map((product) => (
                 <div
                   key={product.id}
-                  className="glass-card p-4 cursor-pointer hover:bg-gemini-card/80 transition-all duration-300"
+                  className="group bg-white border border-gray-200 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-blue-200 transition-all duration-200"
                   onClick={() => handleAddToCart(product)}
                 >
-                  <div className="aspect-square bg-gemini-bg rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                  <div className="aspect-square bg-gray-50 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
                     {product.image ? (
                       <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
                     ) : (
-                      <CubeIcon className="w-12 h-12 text-gemini-text-muted" />
+                      <CubeIcon className="w-12 h-12 text-gray-400" />
                     )}
                   </div>
-                  <h3 className="font-semibold text-gemini-text-primary text-sm mb-1">{product.name}</h3>
-                  <p className="text-gemini-text-muted text-xs mb-2">{product.sku}</p>
-                  <p className="text-gemini-neon font-bold">${product.price.toFixed(2)}</p>
+                  <div className="space-y-1">
+                    <h3 className="font-semibold text-gray-900 text-sm line-clamp-2">{product.name}</h3>
+                    <p className="text-gray-500 text-xs">{product.sku}</p>
+                    <p className="text-blue-600 font-bold text-lg">${product.price.toFixed(2)}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -118,151 +121,157 @@ const POS: React.FC = () => {
         </div>
 
         {/* Cart Section */}
-        <div className="w-96 flex flex-col">
-          <div className="glass-card p-6 flex-1 flex flex-col">
-            <h2 className="text-xl font-semibold text-gemini-text-primary mb-4 flex items-center gap-2">
-              <ShoppingCartIcon className="w-6 h-6" />
+        <div className="w-96 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+          <div className="p-6 border-b border-gray-100">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <ShoppingCartIcon className="w-5 h-5 text-blue-600" />
+              </div>
               Current Sale
             </h2>
-            
-            {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto mb-4">
-              {state.items.length === 0 ? (
-                <div className="text-center text-gemini-text-muted py-8">
-                  <ShoppingCartIcon className="w-16 h-16 mx-auto mb-2 text-gemini-text-muted" />
-                  <p>Cart is empty</p>
+          </div>
+          
+          {/* Cart Items */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {state.items.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ShoppingCartIcon className="w-8 h-8 text-gray-400" />
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {state.items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 bg-gemini-bg/50 rounded-lg">
-                      <div className="w-12 h-12 bg-gemini-surface rounded-lg flex items-center justify-center">
-                        {item.image ? (
-                          <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <CubeIcon className="w-6 h-6 text-gemini-text-muted" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gemini-text-primary text-sm">{item.name}</h4>
-                        <p className="text-gemini-text-muted text-xs">{item.sku}</p>
-                        <p className="text-gemini-neon text-sm font-semibold">${item.price.toFixed(2)}</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light flex items-center justify-center"
-                        >
-                          <MinusIcon className="w-3 h-3" />
-                        </button>
-                        <span className="text-gemini-text-primary font-medium w-8 text-center">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-6 h-6 bg-gemini-indigo rounded text-white text-xs hover:bg-gemini-indigo-light flex items-center justify-center"
-                        >
-                          <PlusIcon className="w-3 h-3" />
-                        </button>
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="w-6 h-6 bg-red-500 rounded text-white text-xs hover:bg-red-600 ml-2 flex items-center justify-center"
-                        >
-                          <XMarkIcon className="w-3 h-3" />
-                        </button>
-                      </div>
+                <p className="text-gray-500 font-medium">Cart is empty</p>
+                <p className="text-gray-400 text-sm mt-1">Add products to get started</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {state.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-gray-200">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <CubeIcon className="w-6 h-6 text-gray-400" />
+                      )}
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Totals */}
-            {state.items.length > 0 && (
-              <div className="border-t border-gemini-indigo/20 pt-4 space-y-2">
-                <div className="flex justify-between text-gemini-text-secondary">
-                  <span>Subtotal:</span>
-                  <span>${getSubtotal().toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-gemini-text-secondary">
-                  <span>Tax (8%):</span>
-                  <span>${(getSubtotal() * 0.08).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-xl font-bold text-gemini-neon">
-                  <span>Total:</span>
-                  <span>${getFinalTotal().toFixed(2)}</span>
-                </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-sm truncate">{item.name}</h4>
+                      <p className="text-gray-500 text-xs">{item.sku}</p>
+                      <p className="text-blue-600 text-sm font-semibold">${item.price.toFixed(2)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-lg flex items-center justify-center transition-colors"
+                      >
+                        <MinusIcon className="w-4 h-4 text-gray-600" />
+                      </button>
+                      <span className="text-gray-900 font-semibold w-8 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors"
+                      >
+                        <PlusIcon className="w-4 h-4 text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="w-8 h-8 bg-red-100 hover:bg-red-200 rounded-lg flex items-center justify-center ml-2 transition-colors"
+                      >
+                        <XMarkIcon className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
-
-            {/* Action Buttons */}
-            <div className="mt-4 space-y-3">
-              <button
-                onClick={handleCheckout}
-                disabled={state.items.length === 0}
-                className="w-full neon-button disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Checkout ${getFinalTotal().toFixed(2)}
-              </button>
-              <button
-                onClick={clearCart}
-                disabled={state.items.length === 0}
-                className="w-full px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Clear Cart
-              </button>
-            </div>
           </div>
+
+          {/* Totals and Actions */}
+          {state.items.length > 0 && (
+            <div className="border-t border-gray-100 p-6 bg-gray-50">
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal:</span>
+                  <span className="font-semibold">${getSubtotal().toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax (8%):</span>
+                  <span className="font-semibold">${(getSubtotal() * 0.08).toFixed(2)}</span>
+                </div>
+                <div className="border-t border-gray-200 pt-3">
+                  <div className="flex justify-between text-xl font-bold text-gray-900">
+                    <span>Total:</span>
+                    <span className="text-blue-600">${getFinalTotal().toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleCheckout}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors"
+                >
+                  Checkout ${getFinalTotal().toFixed(2)}
+                </button>
+                <button
+                  onClick={clearCart}
+                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-colors"
+                >
+                  Clear Cart
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Payment Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="glass-card p-8 max-w-md w-full mx-4">
-            <h2 className="text-2xl font-bold text-gemini-text-primary mb-6">Process Payment</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Process Payment</h2>
             
-            <div className="mb-6">
-              <p className="text-gemini-text-secondary mb-2">Total Amount:</p>
-              <p className="text-3xl font-bold text-gemini-neon">${getFinalTotal().toFixed(2)}</p>
+            <div className="mb-8">
+              <p className="text-gray-600 mb-2">Total Amount:</p>
+              <p className="text-4xl font-bold text-blue-600">${getFinalTotal().toFixed(2)}</p>
             </div>
 
-            <div className="mb-6">
-              <p className="text-gemini-text-secondary mb-3">Payment Method:</p>
-              <div className="grid grid-cols-2 gap-3">
+            <div className="mb-8">
+              <p className="text-gray-600 mb-4 font-semibold">Payment Method:</p>
+              <div className="grid grid-cols-2 gap-4">
                 <button
                   onClick={() => setPaymentMethod('cash')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
+                  className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 ${
                     paymentMethod === 'cash'
-                      ? 'border-gemini-neon bg-gemini-neon/20 text-gemini-neon'
-                      : 'border-gemini-indigo/30 text-gemini-text-secondary hover:border-gemini-indigo'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
                   }`}
                 >
                   <CurrencyDollarIcon className="w-8 h-8" />
-                  <div className="font-medium">Cash</div>
+                  <span className="font-semibold">Cash</span>
                 </button>
                 <button
                   onClick={() => setPaymentMethod('card')}
-                  className={`p-4 rounded-lg border-2 transition-all duration-200 flex flex-col items-center gap-2 ${
+                  className={`p-6 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 ${
                     paymentMethod === 'card'
-                      ? 'border-gemini-neon bg-gemini-neon/20 text-gemini-neon'
-                      : 'border-gemini-indigo/30 text-gemini-text-secondary hover:border-gemini-indigo'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
                   }`}
                 >
                   <CreditCardIcon className="w-8 h-8" />
-                  <div className="font-medium">Card</div>
+                  <span className="font-semibold">Card</span>
                 </button>
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <button
                 onClick={() => setShowPaymentModal(false)}
-                className="flex-1 px-4 py-2 bg-gemini-surface text-gemini-text-secondary rounded-lg hover:bg-gemini-card transition-colors duration-200"
+                className="flex-1 py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handlePayment}
-                className="flex-1 neon-button"
+                className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-colors"
               >
                 Process Payment
               </button>
@@ -275,3 +284,4 @@ const POS: React.FC = () => {
 };
 
 export default POS;
+
