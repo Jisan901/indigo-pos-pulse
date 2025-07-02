@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { useCart } from '../context/CartContext';
@@ -9,7 +10,8 @@ import {
   MinusIcon,
   XMarkIcon,
   CurrencyDollarIcon,
-  CreditCardIcon
+  CreditCardIcon,
+  CubeIcon
 } from '@heroicons/react/24/outline';
 
 interface Product {
