@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { useCart } from '../context/CartContext';
@@ -209,84 +208,85 @@ const POS: React.FC = () => {
             </div>
           </div>
 
-          {/* Cart Sidebar */}
-          <div className="w-96 glass-card border-l border-gemini-indigo/20 flex flex-col flex-shrink-0">
-            {/* Cart Header */}
-            <div className="p-6 border-b border-gemini-indigo/20 flex-shrink-0">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gemini-indigo/20 rounded-lg flex items-center justify-center">
-                  <ShoppingCartIcon className="w-5 h-5 text-gemini-neon" />
+          {/* Cart Sidebar - Made more compact */}
+          <div className="w-80 glass-card border-l border-gemini-indigo/20 flex flex-col flex-shrink-0">
+            {/* Cart Header - Reduced padding */}
+            <div className="p-4 border-b border-gemini-indigo/20 flex-shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 bg-gemini-indigo/20 rounded-lg flex items-center justify-center">
+                  <ShoppingCartIcon className="w-4 h-4 text-gemini-neon" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-gemini-text-primary">Current Order</h2>
-                  <p className="text-sm text-gemini-text-secondary">{state.items.length} items</p>
+                  <h2 className="text-base font-bold text-gemini-text-primary">Current Order</h2>
+                  <p className="text-xs text-gemini-text-secondary">{state.items.length} items</p>
                 </div>
               </div>
             </div>
             
-            {/* Cart Items */}
+            {/* Cart Items - Made more compact */}
             <div className="flex-1 overflow-y-auto min-h-0">
               {state.items.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full p-6 text-center">
-                  <div className="w-20 h-20 bg-gemini-surface rounded-full flex items-center justify-center mb-4">
-                    <ShoppingCartIcon className="w-10 h-10 text-gemini-text-muted" />
+                <div className="flex flex-col items-center justify-center h-full p-4 text-center">
+                  <div className="w-16 h-16 bg-gemini-surface rounded-full flex items-center justify-center mb-3">
+                    <ShoppingCartIcon className="w-8 h-8 text-gemini-text-muted" />
                   </div>
-                  <h3 className="font-medium text-gemini-text-primary mb-2">Your cart is empty</h3>
-                  <p className="text-gemini-text-secondary text-sm">Add products to get started with your order</p>
+                  <h3 className="font-medium text-gemini-text-primary mb-1 text-sm">Your cart is empty</h3>
+                  <p className="text-gemini-text-secondary text-xs">Add products to get started</p>
                 </div>
               ) : (
-                <div className="p-4 space-y-3">
+                <div className="p-2 space-y-2">
                   {state.items.map((item) => (
-                    <div key={item.id} className="bg-gemini-surface/50 rounded-xl p-4 border border-gemini-indigo/10">
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 bg-gemini-card rounded-lg flex items-center justify-center border border-gemini-indigo/20 flex-shrink-0 overflow-hidden">
+                    <div key={item.id} className="bg-gemini-surface/50 rounded-lg p-2 border border-gemini-indigo/10">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gemini-card rounded flex items-center justify-center border border-gemini-indigo/20 flex-shrink-0 overflow-hidden">
                           {item.image ? (
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded-lg" />
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover rounded" />
                           ) : (
-                            <CubeIcon className="w-6 h-6 text-gemini-text-muted" />
+                            <CubeIcon className="w-4 h-4 text-gemini-text-muted" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gemini-text-primary text-sm mb-1 truncate">{item.name}</h4>
-                          <p className="text-xs text-gemini-text-muted mb-2">{item.sku}</p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-gemini-neon">
-                              ${item.price.toFixed(2)}
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                removeItem(item.id);
-                              }}
-                              className="text-red-400 hover:text-red-300 transition-colors"
-                            >
-                              <XMarkIcon className="w-4 h-4" />
-                            </button>
-                          </div>
+                          <h4 className="font-medium text-gemini-text-primary text-xs mb-0.5 truncate">{item.name}</h4>
+                          <p className="text-xs text-gemini-text-muted">{item.sku}</p>
                         </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeItem(item.id);
+                          }}
+                          className="text-red-400 hover:text-red-300 transition-colors p-1"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
                       </div>
-                      <div className="flex items-center justify-center gap-3 mt-3 bg-gemini-card rounded-lg p-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateQuantity(item.id, item.quantity - 1);
-                          }}
-                          className="w-8 h-8 bg-gemini-surface hover:bg-gemini-indigo/20 rounded-lg flex items-center justify-center transition-colors"
-                        >
-                          <MinusIcon className="w-4 h-4 text-gemini-text-secondary" />
-                        </button>
-                        <span className="text-lg font-semibold text-gemini-text-primary w-12 text-center">
-                          {item.quantity}
+                      
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs font-semibold text-gemini-neon">
+                          ${item.price.toFixed(2)}
                         </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            updateQuantity(item.id, item.quantity + 1);
-                          }}
-                          className="w-8 h-8 bg-gemini-indigo/20 hover:bg-gemini-indigo/30 rounded-lg flex items-center justify-center transition-colors"
-                        >
-                          <PlusIcon className="w-4 h-4 text-gemini-neon" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateQuantity(item.id, item.quantity - 1);
+                            }}
+                            className="w-6 h-6 bg-gemini-surface hover:bg-gemini-indigo/20 rounded flex items-center justify-center transition-colors"
+                          >
+                            <MinusIcon className="w-3 h-3 text-gemini-text-secondary" />
+                          </button>
+                          <span className="text-sm font-semibold text-gemini-text-primary w-6 text-center">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              updateQuantity(item.id, item.quantity + 1);
+                            }}
+                            className="w-6 h-6 bg-gemini-indigo/20 hover:bg-gemini-indigo/30 rounded flex items-center justify-center transition-colors"
+                          >
+                            <PlusIcon className="w-3 h-3 text-gemini-neon" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -294,36 +294,36 @@ const POS: React.FC = () => {
               )}
             </div>
 
-            {/* Cart Footer */}
+            {/* Cart Footer - Made more compact */}
             {state.items.length > 0 && (
-              <div className="border-t border-gemini-indigo/20 p-6 bg-gemini-surface/30 flex-shrink-0">
-                <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-sm text-gemini-text-secondary">
+              <div className="border-t border-gemini-indigo/20 p-4 bg-gemini-surface/30 flex-shrink-0">
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-xs text-gemini-text-secondary">
                     <span>Subtotal:</span>
                     <span className="font-medium text-gemini-text-primary">${getSubtotal().toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gemini-text-secondary">
+                  <div className="flex justify-between text-xs text-gemini-text-secondary">
                     <span>Tax (8%):</span>
                     <span className="font-medium text-gemini-text-primary">${(getSubtotal() * 0.08).toFixed(2)}</span>
                   </div>
-                  <div className="border-t border-gemini-indigo/20 pt-3">
+                  <div className="border-t border-gemini-indigo/20 pt-2">
                     <div className="flex justify-between">
-                      <span className="text-lg font-bold text-gemini-text-primary">Total:</span>
-                      <span className="text-2xl font-bold text-gemini-neon">${getFinalTotal().toFixed(2)}</span>
+                      <span className="text-sm font-bold text-gemini-text-primary">Total:</span>
+                      <span className="text-lg font-bold text-gemini-neon">${getFinalTotal().toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <button
                     onClick={handleCheckout}
-                    className="neon-button w-full py-4 px-6 rounded-xl shadow-lg shadow-gemini-indigo/20"
+                    className="neon-button w-full py-3 px-4 rounded-lg shadow-lg shadow-gemini-indigo/20 text-sm"
                   >
                     Checkout • ${getFinalTotal().toFixed(2)}
                   </button>
                   <button
                     onClick={clearCart}
-                    className="w-full bg-gemini-surface hover:bg-gemini-card text-gemini-text-primary font-medium py-3 px-6 rounded-xl border border-gemini-indigo/20 transition-colors"
+                    className="w-full bg-gemini-surface hover:bg-gemini-card text-gemini-text-primary font-medium py-2 px-4 rounded-lg border border-gemini-indigo/20 transition-colors text-sm"
                   >
                     Clear Cart
                   </button>
