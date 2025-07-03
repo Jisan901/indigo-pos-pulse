@@ -317,13 +317,13 @@ const POS: React.FC = () => {
                 <div className="space-y-2">
                   <button
                     onClick={handleCheckout}
-                    className="neon-button w-full py-3 px-4 rounded-lg shadow-lg shadow-gemini-indigo/20 text-sm"
+                    className="neon-button w-full py-2 px-3 rounded-lg shadow-lg shadow-gemini-indigo/20 text-xs"
                   >
                     Checkout • ${getFinalTotal().toFixed(2)}
                   </button>
                   <button
                     onClick={clearCart}
-                    className="w-full bg-gemini-surface hover:bg-gemini-card text-gemini-text-primary font-medium py-2 px-4 rounded-lg border border-gemini-indigo/20 transition-colors text-sm"
+                    className="w-full bg-gemini-surface hover:bg-gemini-card text-gemini-text-primary font-medium py-1.5 px-3 rounded-lg border border-gemini-indigo/20 transition-colors text-xs"
                   >
                     Clear Cart
                   </button>
