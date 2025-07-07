@@ -7,7 +7,8 @@ import {
   ArrowLeftIcon,
   CurrencyDollarIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -20,6 +21,13 @@ const CashPayment: React.FC = () => {
   const [amountReceived, setAmountReceived] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   
+  // Customer data fields
+  const [customerData, setCustomerData] = useState({
+    name: '',
+    phone: '',
+    email: ''
+  });
+  
   const totalAmount = getFinalTotal();
   const receivedAmount = parseFloat(amountReceived) || 0;
   const changeAmount = receivedAmount - totalAmount;
@@ -27,6 +35,13 @@ const CashPayment: React.FC = () => {
 
   const handleBackToPOS = () => {
     navigate('/pos');
+  };
+
+  const handleCustomerDataChange = (field: string, value: string) => {
+    setCustomerData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleProcessPayment = async () => {
@@ -40,7 +55,8 @@ const CashPayment: React.FC = () => {
     // Simulate payment processing
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    toast.success(`Payment of $${totalAmount.toFixed(2)} processed successfully!`);
+    const customerInfo = customerData.name ? ` for ${customerData.name}` : '';
+    toast.success(`Payment of $${totalAmount.toFixed(2)} processed successfully${customerInfo}!`);
     clearCart();
     navigate('/pos');
   };
@@ -66,6 +82,59 @@ const CashPayment: React.FC = () => {
           <div>
             <h1 className="text-2xl font-bold text-gemini-text-primary">Cash Payment</h1>
             <p className="text-gemini-text-secondary">Process cash transaction</p>
+          </div>
+        </div>
+
+        {/* Customer Information Card */}
+        <div className="glass-card p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-gemini-indigo/20 rounded-lg flex items-center justify-center">
+              <UserIcon className="w-5 h-5 text-gemini-neon" />
+            </div>
+            <h2 className="text-lg font-semibold text-gemini-text-primary">Customer Information</h2>
+            <span className="text-sm text-gemini-text-secondary">(Optional)</span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="customerName" className="block text-sm font-medium text-gemini-text-secondary mb-2">
+                Name
+              </label>
+              <Input
+                id="customerName"
+                type="text"
+                value={customerData.name}
+                onChange={(e) => handleCustomerDataChange('name', e.target.value)}
+                placeholder="Customer name"
+                className="bg-gemini-surface border-gemini-indigo/20 focus:border-gemini-neon"
+              />
+            </div>
+            <div>
+              <label htmlFor="customerPhone" className="block text-sm font-medium text-gemini-text-secondary mb-2">
+                Phone
+              </label>
+              <Input
+                id="customerPhone"
+                type="tel"
+                value={customerData.phone}
+                onChange={(e) => handleCustomerDataChange('phone', e.target.value)}
+                placeholder="Phone number"
+                className="bg-gemini-surface border-gemini-indigo/20 focus:border-gemini-neon"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="customerEmail" className="block text-sm font-medium text-gemini-text-secondary mb-2">
+                Email
+              </label>
+              <Input
+                id="customerEmail"
+                type="email"
+                value={customerData.email}
+                onChange={(e) => handleCustomerDataChange('email', e.target.value)}
+                placeholder="Email address"
+                className="bg-gemini-surface border-gemini-indigo/20 focus:border-gemini-neon"
+              />
+            </div>
           </div>
         </div>
 
