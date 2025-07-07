@@ -14,6 +14,7 @@ import {
   Squares2X2Icon,
   ListBulletIcon
 } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
   id: string;
@@ -28,8 +29,8 @@ const POS: React.FC = () => {
   const { state, addItem, removeItem, updateQuantity, clearCart, getSubtotal, getFinalTotal } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card'>('cash');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const navigate = useNavigate();
 
   // Mock products - replace with real data
   const products: Product[] = [
@@ -67,11 +68,14 @@ const POS: React.FC = () => {
     setShowPaymentModal(true);
   };
 
-  const handlePayment = () => {
-    toast.success(`Payment of $${getFinalTotal().toFixed(2)} processed successfully!`);
+  const handleCashPayment = () => {
+    navigate('/cash-payment');
+  };
+
+  const handleCardPayment = () => {
+    toast.success(`Card payment of $${getFinalTotal().toFixed(2)} processed successfully!`);
     clearCart();
     setShowPaymentModal(false);
-    setPaymentMethod('cash');
   };
 
   return (
@@ -340,7 +344,7 @@ const POS: React.FC = () => {
           <div className="glass-card max-w-md w-full overflow-hidden">
             <div className="bg-gradient-to-r from-gemini-indigo to-gemini-neon p-6 text-white">
               <h2 className="text-2xl font-bold mb-2">Complete Payment</h2>
-              <p className="text-blue-100">Finalize your transaction</p>
+              <p className="text-blue-100">Select payment method</p>
             </div>
             
             <div className="p-6">
@@ -353,23 +357,15 @@ const POS: React.FC = () => {
                 <p className="text-gemini-text-primary font-medium mb-4">Select Payment Method</p>
                 <div className="grid grid-cols-2 gap-4">
                   <button
-                    onClick={() => setPaymentMethod('cash')}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 ${
-                      paymentMethod === 'cash'
-                        ? 'border-gemini-neon bg-gemini-neon/10 text-gemini-neon'
-                        : 'border-gemini-indigo/20 text-gemini-text-secondary hover:border-gemini-indigo/40 hover:bg-gemini-surface/50'
-                    }`}
+                    onClick={handleCashPayment}
+                    className="p-4 rounded-xl border-2 border-gemini-indigo/20 text-gemini-text-secondary hover:border-gemini-neon/40 hover:bg-gemini-neon/10 hover:text-gemini-neon transition-all duration-200 flex flex-col items-center gap-3"
                   >
                     <CurrencyDollarIcon className="w-8 h-8" />
                     <span className="font-medium">Cash</span>
                   </button>
                   <button
-                    onClick={() => setPaymentMethod('card')}
-                    className={`p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-3 ${
-                      paymentMethod === 'card'
-                        ? 'border-gemini-neon bg-gemini-neon/10 text-gemini-neon'
-                        : 'border-gemini-indigo/20 text-gemini-text-secondary hover:border-gemini-indigo/40 hover:bg-gemini-surface/50'
-                    }`}
+                    onClick={handleCardPayment}
+                    className="p-4 rounded-xl border-2 border-gemini-indigo/20 text-gemini-text-secondary hover:border-gemini-neon/40 hover:bg-gemini-neon/10 hover:text-gemini-neon transition-all duration-200 flex flex-col items-center gap-3"
                   >
                     <CreditCardIcon className="w-8 h-8" />
                     <span className="font-medium">Card</span>
@@ -383,12 +379,6 @@ const POS: React.FC = () => {
                   className="flex-1 py-3 px-6 bg-gemini-surface hover:bg-gemini-card text-gemini-text-primary font-medium rounded-xl border border-gemini-indigo/20 transition-colors"
                 >
                   Cancel
-                </button>
-                <button
-                  onClick={handlePayment}
-                  className="flex-1 py-3 px-6 neon-button rounded-xl shadow-lg shadow-gemini-indigo/20"
-                >
-                  Process Payment
                 </button>
               </div>
             </div>
