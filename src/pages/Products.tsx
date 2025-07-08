@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { toast } from 'sonner';
 import { 
@@ -7,8 +6,27 @@ import {
   PlusIcon,
   PencilIcon,
   TrashIcon,
-  CubeIcon
+  CubeIcon,
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
 
 interface Product {
   id: string;
@@ -19,6 +37,9 @@ interface Product {
   stock: number;
   image?: string;
 }
+
+type SortField = 'name' | 'price' | 'sku' | 'category' | 'stock';
+type SortOrder = 'asc' | 'desc';
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([
@@ -31,8 +52,13 @@ const Products: React.FC = () => {
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [formData, setFormData] = useState({
     name: '',
     price: '',
@@ -41,11 +67,60 @@ const Products: React.FC = () => {
     stock: '',
   });
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1); // Reset to first page when sorting
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ChevronUpDownIcon className="w-4 h-4 text-gemini-text-muted" />;
+    }
+    return sortOrder === 'asc' 
+      ? <ChevronUpIcon className="w-4 h-4 text-gemini-neon" />
+      : <ChevronDownIcon className="w-4 h-4 text-gemini-neon" />;
+  };
+
+  const sortedAndFilteredProducts = useMemo(() => {
+    let filtered = products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           product.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = !categoryFilter || product.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+
+    // Sort the filtered results
+    filtered.sort((a, b) => {
+      let valueA: string | number = a[sortField];
+      let valueB: string | number = b[sortField];
+
+      if (sortField === 'price' || sortField === 'stock') {
+        valueA = Number(valueA);
+        valueB = Number(valueB);
+      } else {
+        valueA = String(valueA).toLowerCase();
+        valueB = String(valueB).toLowerCase();
+      }
+
+      if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+      if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [products, searchTerm, categoryFilter, sortField, sortOrder]);
+
+  const totalPages = Math.ceil(sortedAndFilteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedProducts = sortedAndFilteredProducts.slice(startIndex, startIndex + itemsPerPage);
+
+  const categories = Array.from(new Set(products.map(p => p.category)));
 
   const handleAddProduct = () => {
     setFormData({ name: '', price: '', sku: '', category: '', stock: '' });
@@ -124,17 +199,47 @@ const Products: React.FC = () => {
           </button>
         </div>
 
-        {/* Search and Filter */}
+        {/* Search, Filter, and Controls */}
         <div className="glass-card p-6 mb-6">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search products by name, SKU, or category..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-3 pl-12 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
-            />
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative md:col-span-2">
+              <input
+                type="text"
+                placeholder="Search products by name, SKU, or category..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-3 pl-12 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
+              />
+              <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gemini-text-muted" />
+            </div>
+
+            <div>
+              <Select value={categoryFilter} onValueChange={(value) => { setCategoryFilter(value === 'all' ? '' : value); setCurrentPage(1); }}>
+                <SelectTrigger className="bg-gemini-bg border-gemini-indigo/30 text-gemini-text-primary">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map(category => (
+                    <SelectItem key={category} value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="bg-gemini-bg border-gemini-indigo/30 text-gemini-text-primary">
+                  <SelectValue placeholder="Items per page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5 per page</SelectItem>
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="25">25 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -144,16 +249,56 @@ const Products: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gemini-surface/50">
                 <tr>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Product</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">SKU</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Category</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Price</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Stock</th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('name')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Product
+                      {getSortIcon('name')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('sku')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      SKU
+                      {getSortIcon('sku')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('category')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Category
+                      {getSortIcon('category')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('price')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Price
+                      {getSortIcon('price')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('stock')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Stock
+                      {getSortIcon('stock')}
+                    </button>
+                  </th>
                   <th className="text-left p-4 text-gemini-text-primary font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                   <tr key={product.id} className="border-t border-gemini-indigo/20 hover:bg-gemini-surface/30 transition-colors duration-200">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
@@ -206,6 +351,48 @@ const Products: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-gemini-indigo/20">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gemini-text-secondary">
+                  Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedAndFilteredProducts.length)} of {sortedAndFilteredProducts.length} results
+                </p>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNum)}
+                            isActive={currentPage === pageNum}
+                            className="cursor-pointer"
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    {totalPages > 5 && <PaginationEllipsis />}
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Add/Edit Product Modal */}

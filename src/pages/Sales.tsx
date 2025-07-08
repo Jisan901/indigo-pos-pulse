@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import MainLayout from '../components/Layout/MainLayout';
 import { 
   MagnifyingGlassIcon,
@@ -7,8 +7,27 @@ import {
   CurrencyDollarIcon,
   ChartBarIcon,
   EyeIcon,
-  XMarkIcon
+  XMarkIcon,
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "../components/ui/pagination";
 
 interface Sale {
   id: string;
@@ -23,6 +42,9 @@ interface Sale {
   paymentMethod: 'cash' | 'card';
   cashier: string;
 }
+
+type SortField = 'id' | 'date' | 'customer' | 'total' | 'paymentMethod' | 'cashier';
+type SortOrder = 'asc' | 'desc';
 
 const Sales: React.FC = () => {
   const [sales] = useState<Sale[]>([
@@ -67,14 +89,66 @@ const Sales: React.FC = () => {
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [sortField, setSortField] = useState<SortField>('date');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const filteredSales = sales.filter(sale => {
-    const matchesSearch = sale.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         sale.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         sale.cashier.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesDate = !dateFilter || sale.date.includes(dateFilter);
-    return matchesSearch && matchesDate;
-  });
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('asc');
+    }
+    setCurrentPage(1); // Reset to first page when sorting
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return <ChevronUpDownIcon className="w-4 h-4 text-gemini-text-muted" />;
+    }
+    return sortOrder === 'asc' 
+      ? <ChevronUpIcon className="w-4 h-4 text-gemini-neon" />
+      : <ChevronDownIcon className="w-4 h-4 text-gemini-neon" />;
+  };
+
+  const sortedAndFilteredSales = useMemo(() => {
+    let filtered = sales.filter(sale => {
+      const matchesSearch = sale.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           sale.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           sale.cashier.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDate = !dateFilter || sale.date.includes(dateFilter);
+      return matchesSearch && matchesDate;
+    });
+
+    // Sort the filtered results
+    filtered.sort((a, b) => {
+      let valueA: string | number = a[sortField];
+      let valueB: string | number = b[sortField];
+
+      if (sortField === 'total') {
+        valueA = a.total;
+        valueB = b.total;
+      } else if (sortField === 'date') {
+        valueA = new Date(a.date).getTime();
+        valueB = new Date(b.date).getTime();
+      } else {
+        valueA = String(valueA).toLowerCase();
+        valueB = String(valueB).toLowerCase();
+      }
+
+      if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+      if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return filtered;
+  }, [sales, searchTerm, dateFilter, sortField, sortOrder]);
+
+  const totalPages = Math.ceil(sortedAndFilteredSales.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedSales = sortedAndFilteredSales.slice(startIndex, startIndex + itemsPerPage);
 
   const handleExport = () => {
     // Mock export functionality
@@ -82,13 +156,13 @@ const Sales: React.FC = () => {
   };
 
   const getTotalRevenue = () => {
-    return filteredSales.reduce((sum, sale) => sum + sale.total, 0);
+    return sortedAndFilteredSales.reduce((sum, sale) => sum + sale.total, 0);
   };
 
   const statCards = [
     {
       title: "Total Sales",
-      value: filteredSales.length.toString(),
+      value: sortedAndFilteredSales.length.toString(),
       icon: ShoppingCartIcon
     },
     {
@@ -98,7 +172,7 @@ const Sales: React.FC = () => {
     },
     {
       title: "Average Sale",
-      value: `$${filteredSales.length > 0 ? (getTotalRevenue() / filteredSales.length).toFixed(2) : '0.00'}`,
+      value: `$${sortedAndFilteredSales.length > 0 ? (getTotalRevenue() / sortedAndFilteredSales.length).toFixed(2) : '0.00'}`,
       icon: ChartBarIcon
     }
   ];
@@ -138,10 +212,10 @@ const Sales: React.FC = () => {
           })}
         </div>
 
-        {/* Search and Filters */}
+        {/* Search, Filters, and Controls */}
         <div className="glass-card p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative md:col-span-2">
               <input
                 type="text"
                 placeholder="Search by sale ID, customer, or cashier..."
@@ -160,6 +234,20 @@ const Sales: React.FC = () => {
                 className="w-full px-4 py-3 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent"
               />
             </div>
+
+            <div>
+              <Select value={itemsPerPage.toString()} onValueChange={(value) => { setItemsPerPage(Number(value)); setCurrentPage(1); }}>
+                <SelectTrigger className="bg-gemini-bg border-gemini-indigo/30 text-gemini-text-primary">
+                  <SelectValue placeholder="Items per page" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5 per page</SelectItem>
+                  <SelectItem value="10">10 per page</SelectItem>
+                  <SelectItem value="25">25 per page</SelectItem>
+                  <SelectItem value="50">50 per page</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
 
@@ -169,18 +257,66 @@ const Sales: React.FC = () => {
             <table className="w-full">
               <thead className="bg-gemini-surface/50">
                 <tr>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Sale ID</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Date & Time</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Customer</th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('id')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Sale ID
+                      {getSortIcon('id')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('date')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Date & Time
+                      {getSortIcon('date')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('customer')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Customer
+                      {getSortIcon('customer')}
+                    </button>
+                  </th>
                   <th className="text-left p-4 text-gemini-text-primary font-semibold">Items</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Total</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Payment</th>
-                  <th className="text-left p-4 text-gemini-text-primary font-semibold">Cashier</th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('total')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Total
+                      {getSortIcon('total')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('paymentMethod')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Payment
+                      {getSortIcon('paymentMethod')}
+                    </button>
+                  </th>
+                  <th className="text-left p-4">
+                    <button
+                      onClick={() => handleSort('cashier')}
+                      className="flex items-center gap-2 text-gemini-text-primary font-semibold hover:text-gemini-neon transition-colors"
+                    >
+                      Cashier
+                      {getSortIcon('cashier')}
+                    </button>
+                  </th>
                   <th className="text-left p-4 text-gemini-text-primary font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredSales.map((sale) => (
+                {paginatedSales.map((sale) => (
                   <tr key={sale.id} className="border-t border-gemini-indigo/20 hover:bg-gemini-surface/30 transition-colors duration-200">
                     <td className="p-4 text-gemini-text-primary font-mono font-semibold">{sale.id}</td>
                     <td className="p-4 text-gemini-text-secondary">{sale.date}</td>
@@ -215,6 +351,48 @@ const Sales: React.FC = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="p-4 border-t border-gemini-indigo/20">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gemini-text-secondary">
+                  Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, sortedAndFilteredSales.length)} of {sortedAndFilteredSales.length} results
+                </p>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <PaginationItem key={pageNum}>
+                          <PaginationLink
+                            onClick={() => setCurrentPage(pageNum)}
+                            isActive={currentPage === pageNum}
+                            className="cursor-pointer"
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    })}
+                    {totalPages > 5 && <PaginationEllipsis />}
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sale Details Modal */}
