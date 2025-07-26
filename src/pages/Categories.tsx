@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MainLayout from '../components/Layout/MainLayout';
 import { useCategory } from '@/context/CategoryContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -161,6 +162,7 @@ const Categories = () => {
   };
 
   return (
+    <MainLayout>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Categories</h1>
@@ -323,6 +325,7 @@ const Categories = () => {
         </CardContent>
       </Card>
     </div>
+    </MainLayout>
   );
 };
 
