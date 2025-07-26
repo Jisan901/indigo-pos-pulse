@@ -7,6 +7,8 @@ import {
   ShoppingCartIcon, 
   CubeIcon, 
   CurrencyDollarIcon,
+  UsersIcon,
+  TagIcon,
   ArrowLeftOnRectangleIcon
 } from '@heroicons/react/24/outline';
 
@@ -19,6 +21,8 @@ const Sidebar: React.FC = () => {
     { path: '/dashboard', label: 'Dashboard', icon: ChartBarIcon },
     { path: '/pos', label: 'POS', icon: ShoppingCartIcon },
     { path: '/products', label: 'Products', icon: CubeIcon },
+    { path: '/categories', label: 'Categories', icon: TagIcon },
+    { path: '/customers', label: 'Customers', icon: UsersIcon },
     { path: '/sales', label: 'Sales', icon: CurrencyDollarIcon },
   ];
 
