@@ -23,7 +23,7 @@ const Categories = () => {
     name: '',
     description: '',
     imageUrl: '',
-    parentCategoryId: '',
+    parentCategoryId: 'none',
   });
 
   const filteredCategories = state.categories.filter(category =>
@@ -45,7 +45,7 @@ const Categories = () => {
 
     const categoryData = {
       ...formData,
-      parentCategoryId: formData.parentCategoryId || undefined,
+      parentCategoryId: formData.parentCategoryId === "none" ? undefined : formData.parentCategoryId || undefined,
     };
 
     if (editingCategory) {
@@ -74,7 +74,7 @@ const Categories = () => {
       name: '',
       description: '',
       imageUrl: '',
-      parentCategoryId: '',
+      parentCategoryId: 'none',
     });
     setEditingCategory(null);
   };
@@ -85,7 +85,7 @@ const Categories = () => {
       name: category.name,
       description: category.description || '',
       imageUrl: category.imageUrl || '',
-      parentCategoryId: category.parentCategoryId || '',
+      parentCategoryId: category.parentCategoryId || 'none',
     });
     setIsDialogOpen(true);
   };
@@ -210,7 +210,7 @@ const Categories = () => {
                       <SelectValue placeholder="Select parent category (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No Parent (Root Category)</SelectItem>
+                      <SelectItem value="none">No Parent (Root Category)</SelectItem>
                       {getParentCategories()
                         .filter(cat => cat.id !== editingCategory?.id)
                         .map((category) => (
