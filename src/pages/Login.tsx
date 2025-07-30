@@ -1,34 +1,22 @@
-
+import { useAuth } from '@/hooks/useAuth';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const [loading, setLoading] = React.useState(false);
+  const { authActions: { login } } = useAuth();
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setLoading(true);
-
-    try {
-      const success = await login(username, password);
-      if (success) {
-        toast.success('Login successful!');
-        navigate('/dashboard');
-      } else {
-        toast.error('Invalid credentials. Try admin/admin or cashier/cashier');
-      }
-    } catch (error) {
-      toast.error('Login failed. Please try again.');
-    } finally {
+    login(email, password, () => {
       setLoading(false);
-    }
+    });
   };
+  // for sign up 
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/';
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-gemini-bg via-gemini-surface to-gemini-bg">
@@ -48,14 +36,14 @@ const Login: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-gemini-text-secondary text-sm font-medium mb-2">
-                Username
+                Email
               </label>
               <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 bg-gemini-bg border border-gemini-indigo/30 rounded-lg text-gemini-text-primary placeholder-gemini-text-muted focus:outline-none focus:ring-2 focus:ring-gemini-neon focus:border-transparent transition-all duration-200"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
                 required
               />
             </div>
@@ -89,10 +77,20 @@ const Login: React.FC = () => {
               )}
             </button>
           </form>
-          
+          <div className="mt-4 text-center">
+            <p className="text-gemini-text-secondary text-sm">
+              Don't have an account?{' '}
+              <a
+                href={`/register?redirect=${redirectPath}`}
+                className="text-gemini-neon hover:underline"
+              >
+                Sign Up
+              </a>
+            </p>
+          </div>
           <div className="mt-6 text-center">
             <p className="text-gemini-text-muted text-sm">
-              Demo credentials: admin/admin or cashier/cashier
+              Demo credentials: admin@demo.com/admin or cashier@demo.com/cashier
             </p>
           </div>
         </div>
