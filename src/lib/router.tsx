@@ -11,6 +11,7 @@ import CashPayment from "@/pages/CashPayment";
 import Customers from "@/pages/Customers";
 import Categories from "@/pages/Categories";
 import NotFound from "@/pages/NotFound";
+import Register from '@/pages/Register';
 
 function Router() {
     return (
@@ -18,6 +19,7 @@ function Router() {
             <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route
                     path="/dashboard"
                     element={

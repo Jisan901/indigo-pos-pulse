@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   ChartBarIcon, 
   ShoppingCartIcon, 
@@ -15,7 +15,7 @@ import {
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout, user } = useAuth();
+  const { authActions:{logout}, user:{data:{user}} } = useAuth();
 
   const menuItems = [
     { path: '/dashboard', label: 'Dashboard', icon: ChartBarIcon },
@@ -44,11 +44,11 @@ const Sidebar: React.FC = () => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gemini-indigo rounded-full flex items-center justify-center">
             <span className="text-sm font-semibold text-white">
-              {user?.username.charAt(0).toUpperCase()}
+              {user?.fullname.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="text-gemini-text-primary font-medium">{user?.username}</p>
+            <p className="text-gemini-text-primary font-medium">{user?.fullname}</p>
             <p className="text-gemini-text-muted text-xs capitalize">{user?.role}</p>
           </div>
         </div>

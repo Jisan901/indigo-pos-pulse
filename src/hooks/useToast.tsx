@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {toast} from "sonner";
 
-const UseToast = (promise: any, loadingMessage: string, onSuccess?:Function) => {
+const UseToast = (promise: any, loadingMessage: string, onSuccess?:Function, onError?:Function) => {
     toast.promise(
         // eslint-disable-next-line no-async-promise-executor
         new Promise(async (resolve, reject) => {
@@ -29,6 +29,7 @@ const UseToast = (promise: any, loadingMessage: string, onSuccess?:Function) => 
                 return message;
             },
             error: (error) => {
+                onError && onError(error);
                 return error.message;
             },
         },

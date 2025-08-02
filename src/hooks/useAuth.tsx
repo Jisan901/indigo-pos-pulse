@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useRegisterMutation } from "../store/services/userApiSlice";
 
 export interface UserData {
+    fullname: string;
     firstName: string;
     lastName: string;
     phone: string;

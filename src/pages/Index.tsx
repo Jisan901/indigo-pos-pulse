@@ -1,19 +1,19 @@
 
+import { useAuth } from '@/hooks/useAuth';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 const Index: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (user?.data?.token) {
       navigate('/dashboard');
     } else {
       navigate('/login');
     }
-  }, [isAuthenticated, navigate]);
+  }, [user?.data?.token, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gemini-bg">
