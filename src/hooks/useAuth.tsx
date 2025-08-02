@@ -71,8 +71,21 @@ export const useAuth = () => {
         navigate(redirectPath);
     };
 
-    // Login handler
+    // Login handler fake
     const handleLogin = (email: string, password: string, onSuccess:()=>void) => {
+        dispatch(addUser({
+            success: true,
+            data: {
+                accessToken: "fake",
+                user:{
+                    fullname: 'fake',
+                },
+            message: "user is fetched fake"
+            }
+        }));
+        redirectAfterSuccess();
+
+
         UseToast(
             login({ email, password }),
             "Logging in...",
