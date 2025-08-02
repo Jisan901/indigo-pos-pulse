@@ -6,14 +6,13 @@ import { useNavigate } from 'react-router-dom';
 const Index: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-
   useEffect(() => {
-    if (user?.data?.token) {
+    if (user?.data?.user) {
       navigate('/dashboard');
     } else {
       navigate('/login');
     }
-  }, [user?.data?.token, navigate]);
+  }, [user?.data?.user, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gemini-bg">
